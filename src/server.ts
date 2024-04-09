@@ -3,6 +3,7 @@ import myContainer from "./config/inversify.config";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import morgan from "morgan";
+import cors from "cors";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(morgan("dev"));
+app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server Running Successfully...");

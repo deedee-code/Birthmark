@@ -1,7 +1,3 @@
-const TYPES = {
-  // Warrior: Symbol.for("Warrior"),
-  // Weapon: Symbol.for("Weapon"),
-  // ThrowableWeapon: Symbol.for("ThrowableWeapon"),
-};
+const TYPES = {};
 
 export default TYPES;
