@@ -4,8 +4,16 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
+import { pool } from "./config/database";
 
 dotenv.config();
+pool.connect((err) => {
+  if (err) {
+    console.error("Error connecting to the database:", err.stack);
+  } else {
+    console.log("Connected to the Database Successfully...");
+  }
+});
 
 import TYPES from "./types";
 
