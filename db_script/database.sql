@@ -90,3 +90,7 @@ ALTER TABLE celebration.birthday_wishes
 -- Add Foreign Key Constraints to Birthday_wish_logs Table
 ALTER TABLE celebration.birthday_wish_logs
     ADD FOREIGN KEY (birthday_wishes_id) REFERENCES celebration.birthday_wishes(id);
+
+-- Rename a column in birthday_wish_log table
+ALTER TABLE celebration.birthday_wish_logs
+    RENAME COLUMN sent_time TO time_sent;
