@@ -1,7 +1,7 @@
 import express from "express";
 
 import router from "./serverRoute";
-import authRouter from "./auth.route";
+import authRouter from "./apiAuth.route";
 
 const routes = express();
 
