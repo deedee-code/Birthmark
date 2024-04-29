@@ -25,19 +25,11 @@ CREATE TABLE IF NOT EXISTS celebration.celebrants (
     gender CHAR(1) CHECK (gender IN ('M', 'F', 'O')),
     email VARCHAR(255),
     phone_number VARCHAR(32),
-    birthdate_id INTEGER NOT NULL,
+    birthdate DATE NOT NULL,
     channel_id INTEGER NOT NULL,
     is_active BOOLEAN DEFAULT FALSE,
     created_at DATE DEFAULT CURRENT_DATE,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create a table called birthdates for storing birthdates of the celebrants along with their corresponding month and years
-CREATE TABLE IF NOT EXISTS celebration.birthdates (
-    id SERIAL PRIMARY KEY,
-    day INTEGER CHECK (day >= 1 AND day <= 31),
-    month INTEGER CHECK (month >= 1 AND month <= 12),
-    year INTEGER CHECK (EXTRACT(YEAR FROM CURRENT_DATE) - year <= 70)
 );
 
 -- Create a table called channels for storing the channels through which birthday wishes are sent to the celebrants
@@ -60,7 +52,7 @@ CREATE TABLE IF NOT EXISTS celebration.birthday_wishes (
 CREATE TABLE IF NOT EXISTS celebration.birthday_wish_logs (
     id SERIAL PRIMARY KEY,
     birthday_wishes_id INTEGER NOT NULL,
-    sent_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    time_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(32) CHECK (status IN ('Successful', 'Pending', 'Failed'))
 );
 
@@ -94,3 +86,30 @@ ALTER TABLE celebration.birthday_wish_logs
 -- Rename a column in birthday_wish_log table
 ALTER TABLE celebration.birthday_wish_logs
     RENAME COLUMN sent_time TO time_sent;
+
+-- Ensuring that the year column in birthdates table is nullable/optional
+ALTER TABLE celebration.birthdates
+    DROP CONSTRAINT birthdates_year_check;
+
+ALTER TABLE celebration.birthdates
+    ADD CONSTRAINT birthdates_year_check CHECK (year IS NULL OR (EXTRACT(YEAR FROM CURRENT_DATE) - year <= 70));
+
+-- Drop the foreign key constraints on celebrant and drop birthdates table
+ALTER TABLE celebration.celebrants
+DROP CONSTRAINT IF EXISTS celebrants_birthdate_id_fkey;
+
+DROP TABLE IF EXISTS celebration.birthdates;
+
+-- Rename the birthdate_id column on celebrants table to birthdate and assign date as it's datatype
+ALTER TABLE celebration.celebrants
+    RENAME COLUMN birthdate_id TO birthdate_old;
+
+ALTER TABLE celebration.celebrants
+    ADD COLUMN birthdate DATE;
+
+ALTER TABLE celebration.celebrants
+    DROP COLUMN birthdate_old;
+
+-- Set the birthdate column as not null
+ALTER TABLE celebration.celebrants
+    ALTER COLUMN birthdate SET NOT NULL;

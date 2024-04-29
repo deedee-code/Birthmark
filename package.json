@@ -2,12 +2,12 @@
   "name": "birthmark-project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "jest --coverage",
     "build": "tsc --build",
     "start": "node ./dist/server.js",
-    "dev": "nodemon ./src/server.ts"
+    "dev": "tsc && nodemon ./src/server.ts"
   },
   "keywords": [],
   "author": "",
