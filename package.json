@@ -24,8 +24,7 @@
     "passport": "^0.7.0",
     "passport-custom": "^1.1.1",
     "pg": "^8.11.5",
-    "reflect-metadata": "^0.2.2",
-    "uuid": "^9.0.1"
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

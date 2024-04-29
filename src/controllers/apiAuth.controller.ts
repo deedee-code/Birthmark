@@ -2,7 +2,6 @@ import passport from "passport";
 import passportCustom from "passport-custom";
 import bcrypt from "bcrypt";
 const CustomStrategy = passportCustom.Strategy;
-import { v4 as uuidv4 } from "uuid";
 import { pool } from "../config/database";
 
 async function hashPassword(password: string) {
@@ -33,16 +32,21 @@ passport.use(
           return done(null, user);
         } else {
           // Passwords don't match
-          return done(null, { message: "Incorrect password" });
+          return done(null, { message: "Invalid Credentials" });
         }
       } else {
         // User doesn't exist, create a new user with API key
         const hashedPassword = await hashPassword(password);
-        const api_key = uuidv4(); // Generate a new UUID for API key
+        const api_key = () => {
+          //create a base-36 string that contains 30 chars in a-z,0-9
+          return [...Array(30)]
+            .map((e) => ((Math.random() * 36) | 0).toString(36))
+            .join("");
+        };
 
         const insertQuery = {
           text: "INSERT INTO celebration.user (phone_number, password, api_key) VALUES ($1, $2, $3) RETURNING *",
-          values: [phone_number, hashedPassword, api_key],
+          values: [phone_number, hashedPassword, api_key()],
         };
         const newUserResult = await pool.query(insertQuery);
         const newUser = newUserResult.rows[0];
