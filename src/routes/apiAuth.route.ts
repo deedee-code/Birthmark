@@ -4,9 +4,9 @@ import passport from "../controllers/index";
 const router = express.Router();
 
 // Define a route to handle authentication
-router.post("/auth", (req: Request, res: Response, next) => {
+router.post("/auth", async (req: Request, res: Response, next) => {
   // Use passport.authenticate middleware with your custom strategy
-  passport.authenticate("custom-api-key", (err: string, user: object) => {
+  await passport.authenticate("custom-api-key", (err: string, user: object) => {
     if (err) {
       return next(err); // Pass error to Express error handler
     }

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { pool } from "../../config/database";
+import { pool } from "../../configs/database";
 
 const allCelebrants = async (req: Request, res: Response) => {
   try {
@@ -50,13 +50,11 @@ const allCelebrants = async (req: Request, res: Response) => {
     const result = await pool.query(queryString, queryParams);
     const celebrants = result.rows;
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Successfully fetched all Celebrants",
-        All_Celebrants: celebrants,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Successfully fetched all Celebrants",
+      All_Celebrants: celebrants,
+    });
   } catch (error) {
     console.error("Error fetching celebrants:", error);
     res.status(500).json({ error: "Internal server error" });

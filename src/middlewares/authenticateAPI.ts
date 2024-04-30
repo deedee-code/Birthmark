@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { pool } from "../config/database";
+import { pool } from "../configs/database";
 
 const authenticateApiKey = async (
   req: Request,

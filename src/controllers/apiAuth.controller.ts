@@ -3,7 +3,7 @@ import passportCustom from "passport-custom";
 import bcrypt from "bcrypt";
 const CustomStrategy = passportCustom.Strategy;
 import { v4 as uuidv4 } from "uuid";
-import { pool } from "../config/database";
+import { pool } from "../configs/database";
 
 async function hashPassword(password: string) {
   const saltRounds = 10;
@@ -41,8 +41,8 @@ passport.use(
         const api_key = uuidv4(); // Generate a new UUID for API key
 
         const insertQuery = {
-          text: "INSERT INTO celebration.user (phone_number, password, api_key) VALUES ($1, $2, $3) RETURNING *",
-          values: [phone_number, hashedPassword, api_key],
+          text: "INSERT INTO celebration.user (phone_number, password, api_key, is_admin) VALUES ($1, $2, $3, $4) RETURNING *",
+          values: [phone_number, hashedPassword, api_key, true],
         };
         const newUserResult = await pool.query(insertQuery);
         const newUser = newUserResult.rows[0];
