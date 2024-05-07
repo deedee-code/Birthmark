@@ -53,7 +53,7 @@ const allCelebrants = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "Successfully fetched all Celebrants",
-      All_Celebrants: celebrants,
+      data: celebrants,
     });
   } catch (error) {
     console.error("Error fetching celebrants:", error);

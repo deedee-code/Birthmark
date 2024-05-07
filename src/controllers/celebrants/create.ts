@@ -47,7 +47,7 @@ const createCelebrant = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: "New Celebrant has been added successfully.",
-      celebrant: newCelebrant,
+      data: newCelebrant,
     });
   } catch (error) {
     console.error("Error executing query", error);

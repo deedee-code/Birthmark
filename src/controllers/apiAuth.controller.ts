@@ -10,6 +10,13 @@ async function hashPassword(password: string) {
   return await bcrypt.hash(password, saltRounds);
 }
 
+async function generateApiKey(phone_number: string) {
+  const hashedPhoneNumber = await bcrypt.hash(phone_number, 10);
+  const uuid = uuidv4();
+  const combinedString = `${uuid}${hashedPhoneNumber}`;
+  return await bcrypt.hash(combinedString, 10);
+}
+
 passport.use(
   "custom-api-key",
   new CustomStrategy(async (req, done) => {
@@ -25,12 +32,12 @@ passport.use(
       const result = await pool.query(query);
 
       if (result.rows.length > 0) {
-        const user = result.rows[0];
-        const match = await bcrypt.compare(password, user.password);
+        const data = result.rows[0];
+        const match = await bcrypt.compare(password, data.password);
 
         if (match) {
           // Passwords match, return the user info
-          return done(null, user);
+          return done(null, data);
         } else {
           // Passwords don't match
           return done(null, { message: "Incorrect password" });
@@ -38,16 +45,18 @@ passport.use(
       } else {
         // User doesn't exist, create a new user with API key
         const hashedPassword = await hashPassword(password);
-        const api_key = uuidv4(); // Generate a new UUID for API key
+        const api_key = await generateApiKey(phone_number);
+
+        // const api_key = uuidv4(); // Generate a new UUID for API key
 
         const insertQuery = {
           text: "INSERT INTO celebration.user (phone_number, password, api_key, is_admin) VALUES ($1, $2, $3, $4) RETURNING *",
           values: [phone_number, hashedPassword, api_key, true],
         };
         const newUserResult = await pool.query(insertQuery);
-        const newUser = newUserResult.rows[0];
+        const data = newUserResult.rows[0];
 
-        return done(null, newUser);
+        return done(null, data);
       }
     } catch (error) {
       return done(error);

@@ -9,7 +9,9 @@ const authenticateApiKey = async (
   const apiKey = req.headers["api_key"];
 
   if (!apiKey) {
-    return res.status(401).json({ message: "API key is required" });
+    return res
+      .status(401)
+      .json({ success: false, message: "API key is required" });
   }
 
   try {

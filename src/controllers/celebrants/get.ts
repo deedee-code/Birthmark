@@ -41,7 +41,7 @@ const getACelebrant = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "Celebrant Id fetched successfully",
-      celebrant: celebrant,
+      data: celebrant,
     });
   } catch (error) {
     console.error("Error fetching celebrant:", error);
