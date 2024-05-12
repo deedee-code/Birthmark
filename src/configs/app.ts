@@ -7,6 +7,7 @@ import cors from "cors";
 import session from "express-session";
 import serverRoute from "../routes/index";
 import { pool } from "./database";
+import scheduleBirthdayWishes from "./cronJobTask";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ export default class App {
     this.config();
     this.routes();
     this.database();
+    this.scheduleBirthdayWishes();
   }
 
   public config() {
@@ -58,6 +60,11 @@ export default class App {
         console.log("Connected to the Database Successfully...");
       }
     });
+  }
+
+  public scheduleBirthdayWishes() {
+    scheduleBirthdayWishes.start();
+    console.log("Birthday wishes cron job scheduled.");
   }
 
   public start(port: number) {
