@@ -14,7 +14,7 @@ dotenv.config();
 const secret: string | undefined = process.env.SESSION_SECRET;
 
 export default class App {
-  private server: Application;
+  public server: Application;
 
   constructor() {
     this.server = express();
