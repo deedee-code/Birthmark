@@ -11,7 +11,7 @@ CREATE SCHEMA IF NOT EXISTS celebration AUTHORIZATION devdeedee;
 CREATE TABLE IF NOT EXISTS celebration.user(
     id SERIAL PRIMARY KEY,
     phone_number varchar(32) NOT NULL UNIQUE,
-    password varchar(32) NOT NULL,
+    password varchar(128) NOT NULL,
     api_key varchar(255) NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE,
     created_at DATE DEFAULT CURRENT_DATE,
