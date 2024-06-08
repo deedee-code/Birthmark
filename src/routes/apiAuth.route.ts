@@ -6,7 +6,7 @@ const router = express.Router();
 // Define a route to handle authentication
 router.post("/auth", (req: Request, res: Response, next) => {
   // Use passport.authenticate middleware with your custom strategy
-  passport.authenticate("custom-api-key", (err: string, user: object) => {
+  passport.authenticate("generate-api-key", (err: string, user: object) => {
     if (err) {
       return next(err); // Pass error to Express error handler
     }
@@ -17,7 +17,7 @@ router.post("/auth", (req: Request, res: Response, next) => {
     return res.status(200).json({
       message: "Successfully Signed-Up/Signed-In with API Key",
       success: true,
-      user: user,
+      data: user,
     });
   })(req, res, next); // Call the authenticate middleware with req, res, next
 });

@@ -1,16 +1,15 @@
 import passport from "passport";
-import passportCustom from "passport-custom";
 import bcrypt from "bcrypt";
-const CustomStrategy = passportCustom.Strategy;
+import { Strategy as CustomStrategy } from "passport-custom";
 import { pool } from "../config/database";
 
 async function hashPassword(password: string) {
-  const saltRounds = 10;
+  const saltRounds: number = parseInt(process.env.SALTROUNDSHASH || "10");
   return await bcrypt.hash(password, saltRounds);
 }
 
 passport.use(
-  "custom-api-key",
+  "generate-api-key",
   new CustomStrategy(async (req, done) => {
     try {
       const phone_number = req.body.phone_number;
