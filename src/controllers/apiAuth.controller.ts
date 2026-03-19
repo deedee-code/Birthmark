@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { pool } from "../configs/database";
 
 async function hashPassword(password: string) {
-  const saltRounds = 10;
+  const saltRounds: number = parseInt(process.env.SALTROUNDSHASH || "10");
   return await bcrypt.hash(password, saltRounds);
 }
 
@@ -18,7 +18,7 @@ export async function generateApiKey(phone_number: string) {
 }
 
 passport.use(
-  "custom-api-key",
+  "generate-api-key",
   new CustomStrategy(async (req, done) => {
     try {
       const phone_number = req.body.phone_number;
@@ -40,7 +40,7 @@ passport.use(
           return done(null, data);
         } else {
           // Passwords don't match
-          return done(null, { message: "Incorrect password" });
+          return done(null, { message: "Invalid Credentials" });
         }
       } else {
         // User doesn't exist, create a new user with API key
