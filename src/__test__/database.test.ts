@@ -1,4 +1,4 @@
-import { pool } from "../config/database";
+import { pool } from "../configs/database";
 
 describe("Database connection", () => {
   it("should connect to the database successfully", () => {
