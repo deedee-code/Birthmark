@@ -17,7 +17,7 @@ router.post("/auth", async (req: Request, res: Response, next) => {
     return res.status(200).json({
       message: "Successfully Signed-Up/Signed-In with API Key",
       success: true,
-      user: user,
+      data: user,
     });
   })(req, res, next); // Call the authenticate middleware with req, res, next
 });
