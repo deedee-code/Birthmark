@@ -10,7 +10,7 @@ async function hashPassword(password: string) {
   return await bcrypt.hash(password, saltRounds);
 }
 
-async function generateApiKey(phone_number: string) {
+export async function generateApiKey(phone_number: string) {
   const hashedPhoneNumber = await bcrypt.hash(phone_number, 10);
   const uuid = uuidv4();
   const combinedString = `${uuid}${hashedPhoneNumber}`;
