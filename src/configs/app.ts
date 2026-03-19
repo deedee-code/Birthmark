@@ -10,20 +10,21 @@ import { pool } from "./database";
 
 dotenv.config();
 
-const secret: string | undefined = process.env.SESSION_SECRET;
+// const secret: string | undefined = process.env.SESSION_SECRET;
 
 export default class App {
   private server: Application;
+  private readonly secret?: string = process.env.SESSION_SECRET;
 
   constructor() {
     this.server = express();
     this.config();
     this.routes();
-    this.database();
+    this.connect_to_db();
   }
 
   public config() {
-    if (!secret) {
+    if (!this.secret) {
       throw new Error("SESSION_SECRET not found in .env file.");
     }
 
@@ -37,7 +38,7 @@ export default class App {
     this.server.use(cors());
     this.server.use(
       session({
-        secret: secret,
+        secret: this.secret,
         resave: false,
         saveUninitialized: false,
       })
@@ -50,7 +51,7 @@ export default class App {
     this.server.use("/", serverRoute);
   }
 
-  public database() {
+  public connect_to_db() {
     pool.connect((err) => {
       if (err) {
         console.error("Error connecting to the database:", err.stack);
