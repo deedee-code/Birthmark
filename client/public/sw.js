@@ -1,5 +1,5 @@
 const CACHE_NAME = 'birthmark-v1';
-const urlsToCache = ['/', '/offline'];
+const urlsToCache = ['/'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
