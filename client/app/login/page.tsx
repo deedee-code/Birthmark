@@ -10,9 +10,8 @@ export const metadata = {
 export default function LoginPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-background">
-      <div className="mb-8 flex items-center gap-2">
-        <Cake className="h-6 w-6 text-primary" />
-        <span className="text-xl font-semibold">Birthmark</span>
+      <div className="flex items-center gap-2">
+        <img src="/icons/birthmark-logo-1024.png" alt="Birthmark Logo" className="h-24 w-24" />
       </div>
       <LoginForm />
       <p className="text-xs text-muted-foreground text-center mt-8">
