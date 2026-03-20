@@ -30,8 +30,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 font-semibold text-lg mb-4">
-              <Cake className="h-5 w-5 text-primary" />
-              <span>Birthmark</span>
+              <img src="/icons/birthmark-logo-1024.png" alt="Birthmark Logo" className="h-24 w-24" />
             </div>
             <p className="text-sm text-muted-foreground">
               Automated birthday wishes for the people you care about.
@@ -53,15 +52,15 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-foreground transition-colors">
+                {/* <Link href="/pricing" className="hover:text-foreground transition-colors">
                   Pricing
-                </Link>
+                </Link> */}
               </li>
             </ul>
           </div>
 
           {/* Company */}
-          <div>
+          {/* <div>
             <h4 className="font-semibold text-sm mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
@@ -70,17 +69,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-foreground transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
                 <Link href="/contact" className="hover:text-foreground transition-colors">
                   Contact
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Legal */}
           <div>
@@ -101,9 +95,9 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        {/* <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 Birthmark. All rights reserved.
+            © {new Date().getFullYear()} Birthmark. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
             <a href="https://twitter.com" className="hover:text-foreground transition-colors">
@@ -116,7 +110,7 @@ export function Footer() {
               LinkedIn
             </a>
           </div>
-        </div>
+        </div> */}
       </div>
     </footer>
   )
