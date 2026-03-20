@@ -16,8 +16,7 @@ export function NavHeader() {
       <nav className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-          <Cake className="h-6 w-6 text-primary" />
-          <span className="hidden sm:inline">Birthmark</span>
+          <img src="/icons/birthmark-logo-1024.png" alt="Birthmark Logo" className="h-24 w-24" />
         </Link>
 
         {/* Navigation Links */}

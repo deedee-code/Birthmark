@@ -61,8 +61,7 @@ export function Sidebar() {
       >
         {/* Header */}
         <div className="border-b border-sidebar-border px-4 py-6 flex items-center gap-2">
-          <Cake className="h-6 w-6 text-sidebar-primary" />
-          <span className="font-semibold text-lg text-sidebar-foreground">Birthmark</span>
+          <img src="/icons/birthmark-logo-1024.png" alt="Birthmark Logo" className="h-24 w-24" />
         </div>
 
         {/* Navigation */}
