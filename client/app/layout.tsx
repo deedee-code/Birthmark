@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   description: 'Birthmark is a web automation tool that sends birthday wishes to your loved ones automatically. Never miss a chance to celebrate the special moments of those who matter most.',
   keywords: ['birthday', 'automation', 'reminders', 'notifications', 'celebration'],
   generator: 'v0.app',
-  manifest: '/manifest.webmanifest',
   applicationName: 'Birthmark',
   appleWebApp: {
     capable: true,
