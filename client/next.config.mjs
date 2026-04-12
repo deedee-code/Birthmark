@@ -5,6 +5,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    maximumDiskCacheSize: 1073741824, // 1GB safety limit
   },
 }
 
