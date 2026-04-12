@@ -1,27 +1,27 @@
 import express from "express";
 import { authenticateApiKey } from "../middlewares/index";
 import {
-  allCelebrants,
+  getAllCelebrants,
   createCelebrant,
   deleteCelebrant,
-  getACelebrant,
-  getCelebrantBirthdayWish,
-  postWishes,
+  getCelebrant,
+  getCelebrantWishes,
+  createWish,
   updateCelebrant,
 } from "../controllers/index";
 
 const router = express.Router();
 
 router.post("/", authenticateApiKey, createCelebrant);
-router.get("/", authenticateApiKey, allCelebrants);
-router.get("/:id", authenticateApiKey, getACelebrant);
+router.get("/", authenticateApiKey, getAllCelebrants);
+router.get("/:id", authenticateApiKey, getCelebrant);
 router.patch("/:id", authenticateApiKey, updateCelebrant);
 router.delete("/:id", authenticateApiKey, deleteCelebrant);
-router.post("/birthday-wish", authenticateApiKey, postWishes);
+router.post("/birthday-wish", authenticateApiKey, createWish);
 router.get(
-  "/birthday-wish/:celebrantId",
+  "/birthday-wish/:celebrant_id",
   authenticateApiKey,
-  getCelebrantBirthdayWish
+  getCelebrantWishes
 );
 
 export default router;

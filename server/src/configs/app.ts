@@ -6,7 +6,7 @@ import passport from "passport";
 import cors from "cors";
 import session from "express-session";
 import serverRoute from "../routes/index";
-import { pool } from "./database";
+import prisma from "./prisma";
 import scheduleBirthdayWishes from "./cronJobTask";
 
 dotenv.config();
@@ -22,7 +22,6 @@ export default class App {
     this.config();
     this.routes();
     this.scheduleBirthdayWishes();
-    this.connect_to_db();
   }
 
   public config() {
@@ -53,15 +52,6 @@ export default class App {
     this.server.use("/", serverRoute);
   }
 
-  public connect_to_db() {
-    pool.connect((err) => {
-      if (err) {
-        console.error("Error connecting to the database:", err.stack);
-      } else {
-        console.log("Connected to the Database Successfully...");
-      }
-    });
-  }
 
   public scheduleBirthdayWishes() {
     scheduleBirthdayWishes.start();

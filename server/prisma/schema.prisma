@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["celebration"]
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  phone_number String   @unique @db.VarChar(32)
+  password     String   @db.VarChar(128)
+  api_key      String   @db.VarChar(255)
+  is_admin     Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Date
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamp
+
+  @@map("user")
+  @@schema("celebration")
+}
+
+model Celebrant {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(255)
+  gender       String?  @db.Char(1)
+  email        String?  @db.VarChar(255)
+  phone_number String?  @db.VarChar(32)
+  birthdate    DateTime @db.Date
+  channel      String   @db.VarChar(50)
+  is_active    Boolean? @default(false)
+  created_at   DateTime @default(now()) @db.Date
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamp
+
+  birthday_wishes BirthdayWish[]
+
+  @@map("celebrants")
+  @@schema("celebration")
+}
+
+model BirthdayWish {
+  id             Int      @id @default(autoincrement())
+  celebrant_id   Int
+  message        String   @db.VarChar(3000)
+  scheduled_time DateTime @db.Timestamp
+
+  celebrant      Celebrant @relation(fields: [celebrant_id], references: [id])
+  logs           BirthdayWishLog[]
+
+  @@map("birthday_wishes")
+  @@schema("celebration")
+}
+
+model BirthdayWishLog {
+  id                 Int      @id @default(autoincrement())
+  birthday_wishes_id Int
+  time_sent          DateTime @default(now()) @db.Timestamp
+  status             String?  @db.VarChar(32)
+
+  wish               BirthdayWish @relation(fields: [birthday_wishes_id], references: [id])
+
+  @@map("birthday_wish_logs")
+  @@schema("celebration")
+}
+
+model BgJobStatus {
+  id         Int       @id @default(autoincrement())
+  job_name   String    @db.VarChar(255)
+  status     String?   @db.VarChar(32)
+  start_time DateTime  @default(now()) @db.Timestamp
+  end_time   DateTime? @db.Timestamp
+  duration   String?   
+
+  @@map("bg_jobs_status")
+  @@schema("celebration")
+}
