@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useData } from '@/contexts/data-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { messageTemplateSchema, type MessageTemplateInput } from '@/lib/schemas'
 import { X, AlertCircle } from 'lucide-react'
 
@@ -17,6 +18,7 @@ export function MessageTemplateForm({ templateId, onClose }: MessageTemplateForm
   const [formData, setFormData] = useState<MessageTemplateInput>({
     name: '',
     message: '',
+    isDefault: false,
   })
   const [errors, setErrors] = useState<Partial<Record<keyof MessageTemplateInput, string>>>({})
   const [isLoading, setIsLoading] = useState(false)
@@ -30,6 +32,7 @@ export function MessageTemplateForm({ templateId, onClose }: MessageTemplateForm
         setFormData({
           name: template.name,
           message: template.message,
+          isDefault: template.isDefault || false,
         })
       }
     }
@@ -97,9 +100,9 @@ export function MessageTemplateForm({ templateId, onClose }: MessageTemplateForm
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
-        <div>
-          <label className="text-sm font-medium" htmlFor="name">
+      <form onSubmit={handleSubmit} className="space-y-4 max-h-[450px] overflow-y-auto pr-3">
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="name">
             Template Name *
           </label>
           <Input
@@ -109,33 +112,35 @@ export function MessageTemplateForm({ templateId, onClose }: MessageTemplateForm
             value={formData.name}
             onChange={handleChange}
             disabled={isLoading}
-            className="mt-1"
           />
           {errors.name && (
-            <p className="text-xs text-destructive mt-1">{errors.name}</p>
+            <p className="text-xs text-destructive">{errors.name}</p>
           )}
         </div>
 
-        <div>
-          <label className="text-sm font-medium" htmlFor="message">
-            Birthday Message *
-          </label>
-          <textarea
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="message">
+              Birthday Message *
+            </label>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              {formData.message.length} Characters
+            </span>
+          </div>
+          <Textarea
             id="message"
             name="message"
             placeholder="Write a heartfelt birthday message..."
             value={formData.message}
             onChange={handleChange}
             disabled={isLoading}
-            rows={6}
-            className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="min-h-[150px] resize-none"
           />
-          <div className="mt-2 flex justify-between items-center text-xs text-muted-foreground">
-            <span>Make it personal and memorable</span>
-            <span>{formData.message.length} characters</span>
-          </div>
+          <p className="text-[10px] text-muted-foreground italic">
+            Tip: Keep it personal and memorable for the recipient.
+          </p>
           {errors.message && (
-            <p className="text-xs text-destructive mt-1">{errors.message}</p>
+            <p className="text-xs text-destructive">{errors.message}</p>
           )}
         </div>
 
@@ -145,11 +150,11 @@ export function MessageTemplateForm({ templateId, onClose }: MessageTemplateForm
             variant="outline"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 cursor-pointer"
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading} className="flex-1">
+          <Button type="submit" disabled={isLoading} className="flex-1 cursor-pointer">
             {isLoading ? 'Saving...' : 'Save Template'}
           </Button>
         </div>
