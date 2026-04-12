@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { pool } from "../configs/database";
+import prisma from "../configs/prisma";
 
 const authenticateApiKey = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const apiKey = req.headers["api_key"];
+  const apiKey = req.headers["api_key"] as string;
 
   if (!apiKey) {
     return res
@@ -15,14 +15,12 @@ const authenticateApiKey = async (
   }
 
   try {
-    const client = await pool.connect();
-    const result = await client.query(
-      "SELECT id FROM celebration.user WHERE api_key = $1",
-      [apiKey]
-    );
-    client.release();
+    const user = await prisma.user.findFirst({
+      where: { api_key: apiKey },
+      select: { id: true },
+    });
 
-    if (result.rows.length === 0) {
+    if (!user) {
       return res.status(401).json({ message: "Invalid API key" });
     }
 
