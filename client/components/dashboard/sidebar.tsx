@@ -14,8 +14,19 @@ import {
   BarChart3,
   Menu,
   X,
+  User,
+  ChevronUp,
 } from 'lucide-react'
 import { useState } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 const navItems = [
   { href: '/dashboard', icon: Home, label: 'Dashboard', exact: true },
@@ -41,17 +52,20 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-40 md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border hover:bg-muted"
-      >
-        {isOpen ? (
-          <X className="h-5 w-5" />
-        ) : (
-          <Menu className="h-5 w-5" />
-        )}
-      </button>
+      {/* Mobile Menu Trigger */}
+      <div className="fixed top-4 right-4 z-50 md:hidden">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-center w-12 h-12 rounded-2xl bg-background/80 backdrop-blur-xl border border-border/60 shadow-lg hover:bg-background transition-all active:scale-90 group"
+          aria-label="Toggle Menu"
+        >
+          {isOpen ? (
+            <X className="h-6 w-6 text-primary group-hover:rotate-90 transition-transform duration-300" />
+          ) : (
+            <Menu className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />
+          )}
+        </button>
+      </div>
 
       {/* Sidebar */}
       <aside
@@ -60,8 +74,13 @@ export function Sidebar() {
         } fixed md:relative md:translate-x-0 left-0 top-0 z-30 h-screen w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-200 flex flex-col`}
       >
         {/* Header */}
-        <div className="border-b border-sidebar-border px-4 py-6 flex items-center gap-2">
-          <img src="/icons/birthmark-logo-1024.png" alt="Birthmark Logo" className="h-24 w-24" />
+        <div className="border-b border-sidebar-border px-6 py-5">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="bg-primary/10 p-1.5 rounded-lg">
+              <img src="/icons/logo.png" alt="Birthmark" className="h-8 w-8 object-contain" />
+            </div>
+            <span className="font-bold text-lg tracking-tight text-sidebar-foreground">Birthmark</span>
+          </Link>
         </div>
 
         {/* Navigation */}
@@ -88,18 +107,50 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-sidebar-border p-4 space-y-3">
-          <div className="px-3 py-2">
-            <p className="text-xs text-sidebar-foreground font-medium">Signed in as</p>
-            <p className="text-sm text-sidebar-foreground truncate">{user?.email}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
-          >
-            <LogOut className="h-5 w-5" />
-            Sign Out
-          </button>
+        <div className="border-t border-sidebar-border p-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-sidebar-accent/50 transition-all duration-300 group text-left outline-hidden">
+                <Avatar className="h-10 w-10 border-2 border-primary/10 shadow-sm group-hover:border-primary/30 transition-colors">
+                  <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+                    {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-sm font-bold text-sidebar-foreground truncate tracking-tight">
+                    {user?.name || 'User'}
+                  </p>
+                  <p className="text-[11px] text-sidebar-foreground/60 truncate font-medium">
+                    {user?.email}
+                  </p>
+                </div>
+                <ChevronUp className="h-4 w-4 text-sidebar-foreground/40 group-hover:text-sidebar-foreground transition-colors" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              side="top" 
+              align="start" 
+              className="w-56 p-2 rounded-2xl border-sidebar-border bg-sidebar-card shadow-2xl animate-in fade-in zoom-in-95 duration-200 mb-2"
+            >
+              <DropdownMenuLabel className="px-2 pb-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-sidebar-foreground/40">My Account</p>
+              </DropdownMenuLabel>
+              <Link href="/dashboard/settings">
+                <DropdownMenuItem className="rounded-xl gap-3 cursor-pointer">
+                  <User className="h-4 w-4" />
+                  <span className="font-bold">Profile Settings</span>
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator className="bg-sidebar-border opacity-50" />
+              <DropdownMenuItem 
+                onClick={handleLogout}
+                className="rounded-xl gap-3 text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="font-bold">Sign Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </aside>
 

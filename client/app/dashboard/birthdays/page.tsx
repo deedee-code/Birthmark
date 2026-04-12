@@ -82,27 +82,24 @@ export default function BirthdaysPage() {
                             <h3 className="font-semibold">{contact.name}</h3>
                             <p className="text-xs text-muted-foreground">{contact.relationship}</p>
                           </div>
-                          <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold ${
-                            daysUntil === 0 
-                              ? 'bg-accent text-accent-foreground'
-                              : 'bg-primary/10 text-primary'
-                          }`}>
-                            {daysUntil === 0 ? '🎉' : daysUntil}
-                          </div>
                         </div>
-
+                        
                         <div className="space-y-2 text-xs">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-muted-foreground uppercase tracking-wider text-[10px] font-bold">Status</span>
+                            <div className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${
+                              daysUntil === 0 
+                                ? 'bg-accent text-accent-foreground animate-pulse' 
+                                : daysUntil === 1
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted text-muted-foreground border border-border'
+                            }`}>
+                              {daysUntil === 0 ? 'Today!' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}
+                            </div>
+                          </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Birthday</span>
-                            <span>{birthDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Age</span>
-                            <span>{age + 1}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">{daysUntil === 0 ? 'Status' : 'In'}</span>
-                            <span className="font-medium">{daysUntil === 0 ? 'Today! 🎊' : `${daysUntil} days`}</span>
+                            <span className="font-medium text-foreground">{birthDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                           </div>
                         </div>
                       </Card>

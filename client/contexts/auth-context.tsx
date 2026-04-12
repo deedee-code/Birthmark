@@ -17,6 +17,8 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   updateProfile: (name: string) => Promise<void>
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>
+  deleteAccount: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -92,6 +94,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(updatedUser)
   }
 
+  const updatePassword = async (currentPassword: string, newPassword: string) => {
+    if (!user) throw new Error('Not authenticated')
+
+    const users = JSON.parse(localStorage.getItem('birthmark_users') || '[]')
+    const userIndex = users.findIndex((u: any) => u.id === user.id)
+    
+    if (userIndex === -1) {
+      throw new Error('User not found')
+    }
+
+    if (users[userIndex].password !== currentPassword) {
+      throw new Error('Incorrect current password')
+    }
+
+    users[userIndex].password = newPassword
+    localStorage.setItem('birthmark_users', JSON.stringify(users))
+  }
+
+  const deleteAccount = async () => {
+    if (!user) return
+
+    // Remove from users list
+    const users = JSON.parse(localStorage.getItem('birthmark_users') || '[]')
+    const updatedUsers = users.filter((u: any) => u.id !== user.id)
+    localStorage.setItem('birthmark_users', JSON.stringify(updatedUsers))
+
+    // Remove current session
+    localStorage.removeItem('birthmark_user')
+    setUser(null)
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -102,6 +135,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         updateProfile,
+        updatePassword,
+        deleteAccount,
       }}
     >
       {children}
