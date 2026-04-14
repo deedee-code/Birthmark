@@ -1,5 +1,4 @@
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcryptjs";
 import { UserRepository } from "../repositories/user.repository";
 import { User, Prisma } from "@prisma/client";
 
@@ -15,34 +14,29 @@ export class AuthService {
     return await bcrypt.hash(password, saltRounds);
   }
 
-  async generateApiKey(phone_number: string): Promise<string> {
-    const hashedPhoneNumber = await bcrypt.hash(phone_number, 10);
-    const uuid = uuidv4();
-    const combinedString = `${uuid}${hashedPhoneNumber}`;
-    return await bcrypt.hash(combinedString, 10);
-  }
-
-  async validateUser(phone_number: string, password: string): Promise<User | { message: string } | null> {
-    const user = await this.userRepository.findByPhoneNumber(phone_number);
-    if (user) {
-      const match = await bcrypt.compare(password, user.password);
-      if (match) {
-        return user;
-      }
-      return { message: "Invalid Credentials" };
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      return null;
     }
-    return null;
+
+    const match = await bcrypt.compare(password, user.password_hash);
+    return match ? user : null;
   }
 
-  async registerUser(phone_number: string, password: string): Promise<User> {
+  async registerUser(email: string, password: string, full_name: string): Promise<User> {
+    const existingUser = await this.userRepository.findByEmail(email);
+    if (existingUser) {
+      throw new Error("Email already registered");
+    }
+
     const hashedPassword = await this.hashPassword(password);
-    const api_key = await this.generateApiKey(phone_number);
 
     return this.userRepository.create({
-      phone_number,
-      password: hashedPassword,
-      api_key,
-      is_admin: true,
+      email,
+      password_hash: hashedPassword,
+      full_name,
+      timezone: process.env.DEFAULT_TIMEZONE || "UTC",
     });
   }
 }

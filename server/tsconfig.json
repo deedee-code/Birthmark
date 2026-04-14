@@ -9,6 +9,7 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "removeComments": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

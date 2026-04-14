@@ -1,6 +1,3 @@
-import passport from "./auth.controller";
-
-export default passport;
-
-export * from "./celebrant.controller";
-export * from "./wish.controller";
+export * from "./auth.controller";
+export * from "./contact.controller";
+export * from "./template.controller";
