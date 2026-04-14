@@ -1,78 +1,158 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["celebration"]
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  phone_number String   @unique @db.VarChar(32)
-  password     String   @db.VarChar(128)
-  api_key      String   @db.VarChar(255)
-  is_admin     Boolean  @default(false)
-  created_at   DateTime @default(now()) @db.Date
-  updated_at   DateTime @default(now()) @updatedAt @db.Timestamp
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email             String             @unique
+  password_hash     String
+  full_name         String
+  timezone          String             @default("UTC")
+  is_paused         Boolean            @default(false)
+  contacts          Contact[]
+  templates         Template[]
+  scheduledMessages ScheduledMessage[]
+  notificationLogs  NotificationLog[]
+  passwordResets    PasswordReset[]
+  refreshTokens     RefreshToken[]
+  created_at        DateTime           @default(now()) @db.Timestamptz
+  updated_at        DateTime           @default(now()) @updatedAt @db.Timestamptz
+  deleted_at        DateTime?          @db.Timestamptz
 
-  @@map("user")
-  @@schema("celebration")
+  @@map("users")
 }
 
-model Celebrant {
-  id           Int      @id @default(autoincrement())
-  username     String   @unique @db.VarChar(255)
-  gender       String?  @db.Char(1)
-  email        String?  @db.VarChar(255)
-  phone_number String?  @db.VarChar(32)
-  birthdate    DateTime @db.Date
-  channel      String   @db.VarChar(50)
-  is_active    Boolean? @default(false)
-  created_at   DateTime @default(now()) @db.Date
-  updated_at   DateTime @default(now()) @updatedAt @db.Timestamp
+model Contact {
+  id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id            String             @db.Uuid
+  first_name         String
+  last_name          String?
+  phone              String
+  birthday_day       Int                @db.SmallInt
+  birthday_month     Int                @db.SmallInt
+  relationship_type  String             @default("friend")
+  relationship_custom String?
+  preferred_channel  String             @default("whatsapp")
+  preferred_send_time DateTime          @default(dbgenerated("TIME '09:00:00'")) @db.Time
+  timezone           String             @default("UTC")
+  is_active          Boolean            @default(true)
+  message_source     String
+  message_body       String             @db.Text
+  template_id        String?            @db.Uuid
+  user               User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  template           Template?          @relation(fields: [template_id], references: [id], onDelete: SetNull)
+  scheduledMessages  ScheduledMessage[]
+  notificationLogs   NotificationLog[]
+  created_at         DateTime           @default(now()) @db.Timestamptz
+  updated_at         DateTime           @default(now()) @updatedAt @db.Timestamptz
 
-  birthday_wishes BirthdayWish[]
-
-  @@map("celebrants")
-  @@schema("celebration")
+  @@index([user_id])
+  @@index([birthday_day, birthday_month])
+  @@index([preferred_channel])
+  @@index([template_id])
+  @@map("contacts")
 }
 
-model BirthdayWish {
-  id             Int      @id @default(autoincrement())
-  celebrant_id   Int
-  message        String   @db.VarChar(3000)
-  scheduled_time DateTime @db.Timestamp
+model Template {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String             @db.Uuid
+  name           String
+  body           String             @db.Text
+  channel        String
+  is_default     Boolean            @default(false)
+  is_ai_generated Boolean           @default(false)
+  user           User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  contacts       Contact[]
+  scheduledMessages ScheduledMessage[]
+  created_at     DateTime           @default(now()) @db.Timestamptz
+  updated_at     DateTime           @default(now()) @updatedAt @db.Timestamptz
 
-  celebrant      Celebrant @relation(fields: [celebrant_id], references: [id])
-  logs           BirthdayWishLog[]
-
-  @@map("birthday_wishes")
-  @@schema("celebration")
+  @@unique([user_id, name])
+  @@index([user_id])
+  @@map("templates")
 }
 
-model BirthdayWishLog {
-  id                 Int      @id @default(autoincrement())
-  birthday_wishes_id Int
-  time_sent          DateTime @default(now()) @db.Timestamp
-  status             String?  @db.VarChar(32)
+model ScheduledMessage {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id           String             @db.Uuid
+  contact_id        String             @db.Uuid
+  template_id       String?            @db.Uuid
+  message_body      String             @db.Text
+  channel           String
+  job_type          String
+  scheduled_for     DateTime           @db.Timestamptz
+  status            String             @default("pending")
+  attempt_count     Int                @default(0) @db.SmallInt
+  last_attempted_at DateTime?          @db.Timestamptz
+  sent_at           DateTime?          @db.Timestamptz
+  error_message     String?
+  user              User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  contact           Contact            @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  template          Template?          @relation(fields: [template_id], references: [id], onDelete: SetNull)
+  notificationLogs  NotificationLog[]
+  created_at        DateTime           @default(now()) @db.Timestamptz
+  updated_at        DateTime           @default(now()) @updatedAt @db.Timestamptz
 
-  wish               BirthdayWish @relation(fields: [birthday_wishes_id], references: [id])
-
-  @@map("birthday_wish_logs")
-  @@schema("celebration")
+  @@index([user_id])
+  @@index([contact_id])
+  @@index([template_id])
+  @@index([status])
+  @@index([scheduled_for])
+  @@map("scheduled_messages")
 }
 
-model BgJobStatus {
-  id         Int       @id @default(autoincrement())
-  job_name   String    @db.VarChar(255)
-  status     String?   @db.VarChar(32)
-  start_time DateTime  @default(now()) @db.Timestamp
-  end_time   DateTime? @db.Timestamp
-  duration   String?   
+model NotificationLog {
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scheduled_message_id String?            @db.Uuid
+  user_id              String?            @db.Uuid
+  contact_id           String?            @db.Uuid
+  channel              String
+  job_type             String
+  status               String
+  provider             String?
+  provider_message_id  String?
+  provider_response    Json?
+  error_message        String?
+  sent_at              DateTime           @default(now()) @db.Timestamptz
+  scheduled_message    ScheduledMessage?  @relation(fields: [scheduled_message_id], references: [id], onDelete: SetNull)
+  user                 User?              @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  contact              Contact?           @relation(fields: [contact_id], references: [id], onDelete: SetNull)
+  created_at           DateTime           @default(now()) @db.Timestamptz
 
-  @@map("bg_jobs_status")
-  @@schema("celebration")
+  @@index([scheduled_message_id])
+  @@index([user_id])
+  @@index([contact_id])
+  @@index([status])
+  @@map("notification_logs")
+}
+
+model PasswordReset {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String    @db.Uuid
+  token      String    @unique
+  expires_at DateTime  @db.Timestamptz
+  used_at    DateTime? @db.Timestamptz
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_at DateTime  @default(now()) @db.Timestamptz
+
+  @@index([user_id])
+  @@map("password_resets")
+}
+
+model RefreshToken {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String    @db.Uuid
+  token      String    @unique
+  expires_at DateTime  @db.Timestamptz
+  revoked_at DateTime? @db.Timestamptz
+  created_at DateTime  @default(now()) @db.Timestamptz
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("refresh_tokens")
 }
