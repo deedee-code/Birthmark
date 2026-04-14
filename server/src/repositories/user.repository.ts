@@ -2,9 +2,9 @@ import { Prisma, User } from "@prisma/client";
 import prisma from "../configs/prisma";
 
 export class UserRepository {
-  async findByPhoneNumber(phone_number: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User | null> {
     return prisma.user.findUnique({
-      where: { phone_number },
+      where: { email },
     });
   }
 
@@ -14,7 +14,7 @@ export class UserRepository {
     });
   }
 
-  async findById(id: number): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     return prisma.user.findUnique({
       where: { id },
     });

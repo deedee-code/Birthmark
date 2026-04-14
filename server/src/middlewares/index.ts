@@ -1,1 +1,2 @@
-export { default as authenticateApiKey } from "./authenticateAPI";
+export { default as errorHandler } from './errorHandler';
+export { default as validate } from './validate';

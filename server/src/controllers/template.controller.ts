@@ -1,23 +1,23 @@
 import { Request, Response } from "express";
-import { WishService } from "../services/wish.service";
+import { TemplateService } from "../services/template.service";
 import { postBirthdayWishValidator } from "../validators/index";
 
-const wishService = new WishService();
+const templateService = new TemplateService();
 
-export const createWish = async (req: Request, res: Response) => {
+export const createTemplate = async (req: Request, res: Response) => {
   const { error } = postBirthdayWishValidator.validate(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  const { celebrant_id, message, scheduled_time } = req.body;
+  const { contact_id, message, scheduled_time } = req.body;
 
   try {
-    const newWish = await wishService.createWish(celebrant_id, message, scheduled_time);
+    const newTemplate = await templateService.createTemplate(contact_id, message, scheduled_time);
     return res.status(201).json({
       success: true,
       message: "Birthday Wish created successfully",
-      data: newWish,
+      data: newTemplate,
     });
   } catch (error: any) {
     if (error.message === "Celebrant not found") {
@@ -27,13 +27,13 @@ export const createWish = async (req: Request, res: Response) => {
   }
 };
 
-export const getCelebrantWishes = async (req: Request, res: Response) => {
+export const getContactTemplates = async (req: Request, res: Response) => {
   try {
-    const celebrant_id = parseInt(req.params.celebrant_id);
-    const wishes = await wishService.getWishesByCelebrant(celebrant_id);
+    const contact_id = req.params.contact_id;
+    const templates = await templateService.getTemplatesByContact(contact_id);
     return res.status(200).json({
       success: true,
-      data: wishes,
+      data: templates,
     });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });

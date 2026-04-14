@@ -1,66 +1,63 @@
-import express, { Application, Request, Response } from "express";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import morgan from "morgan";
-import passport from "passport";
-import cors from "cors";
-import session from "express-session";
-import serverRoute from "../routes/index";
-import prisma from "./prisma";
-import scheduleBirthdayWishes from "./cronJobTask";
-
-dotenv.config();
-
-// const secret: string | undefined = process.env.SESSION_SECRET;
+import express, { Application } from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import serverRoute from '../routes/index';
+import ApiResponse from '../utils/apiResponse';
+import errorHandler from '../middlewares/errorHandler';
 
 export default class App {
   private server: Application;
-  private readonly secret?: string = process.env.SESSION_SECRET;
 
   constructor() {
     this.server = express();
-    this.config();
-    this.routes();
-    this.scheduleBirthdayWishes();
+    this.configureMiddleware();
+    this.configureRoutes();
+    this.configureErrorHandling();
   }
 
-  public config() {
-    if (!this.secret) {
-      throw new Error("SESSION_SECRET not found in .env file.");
-    }
+  private configureMiddleware(): void {
+    this.server.set('trust proxy', 1);
 
-    this.server.use(bodyParser.json());
-    this.server.use(
-      bodyParser.urlencoded({
-        extended: true,
-      })
-    );
-    this.server.use(morgan("dev"));
+    this.server.use(helmet());
     this.server.use(cors());
-    this.server.use(
-      session({
-        secret: this.secret,
-        resave: false,
-        saveUninitialized: false,
-      })
-    );
-    this.server.use(passport.initialize());
-    this.server.use(passport.session());
-  }
+    this.server.use(express.json());
+    this.server.use(express.urlencoded({ extended: true }));
+    this.server.use(morgan('combined'));
 
-  public routes() {
-    this.server.use("/", serverRoute);
-  }
-
-
-  public scheduleBirthdayWishes() {
-    scheduleBirthdayWishes.start();
-    console.log("Birthday wishes cron job scheduled.");
-  }
-
-  public start(port: number) {
-    this.server.listen(port, () => {
-      console.log(`Server is running on port: ${port}`);
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 100,
+      message: 'Too many requests from this IP, please try again later.',
+      standardHeaders: true,
+      legacyHeaders: false,
     });
+
+    this.server.use(limiter);
+  }
+
+  private configureRoutes(): void {
+    this.server.get('/health', (req, res) => {
+      res.json(new ApiResponse(true, 'Server is healthy', { timestamp: new Date() }));
+    });
+
+    this.server.use('/api/v1', serverRoute);
+  }
+
+  private configureErrorHandling(): void {
+    this.server.use((req, res) => {
+      res.status(404).json(
+        new ApiResponse(false, 'Resource not found', null, [
+          { path: req.path, message: `Route ${req.method} ${req.path} not found` },
+        ])
+      );
+    });
+
+    this.server.use(errorHandler);
+  }
+
+  public getServer(): Application {
+    return this.server;
   }
 }

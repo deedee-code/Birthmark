@@ -2,7 +2,7 @@ import express from "express";
 
 import serverRouter from "./serverRoute";
 import authRouter from "./auth.route";
-import celebrantRouter from "./celebrant.route";
+import celebrantRouter from "./contact.route";
 
 const routes = express.Router();
 
